@@ -7,8 +7,8 @@ use AhmedHegazy\FcmHelper\Tests\TestCase;
 
 class FcmDataTest extends TestCase
 {
-    /** @test */
-    public function it_can_create_data_with_notify_type()
+
+    public function test_can_create_data_with_notify_type()
     {
         $data = new FcmData();
         $array = $data->toArray();
@@ -16,8 +16,8 @@ class FcmDataTest extends TestCase
         $this->assertEquals('general', $array['notify_type'], 'The default notify type should be "general"');
     }
 
-    /** @test */
-    public function it_can_add_custom_data()
+
+    public function test_can_add_custom_data()
     {
         $data = new FcmData();
         $data->add('key1', 'value1')
@@ -29,8 +29,8 @@ class FcmDataTest extends TestCase
         $this->assertEquals('value2', $array['key2']);
     }
 
-    /** @test */
-    public function it_can_hide_notification()
+
+    public function test_can_hide_notification()
     {
         $data = new FcmData();
         $data->hide();
@@ -40,8 +40,8 @@ class FcmDataTest extends TestCase
         $this->assertEquals(1, $array['is_hidden']);
     }
 
-    /** @test */
-    public function it_can_show_notification()
+
+    public function test_can_show_notification()
     {
         $data = new FcmData();
         $data->show();
@@ -51,8 +51,8 @@ class FcmDataTest extends TestCase
         $this->assertEquals(0, $array['is_hidden']);
     }
 
-    /** @test */
-    public function it_maintains_chaining_for_data_methods()
+
+    public function test_maintains_chaining_for_data_methods()
     {
         $data = new FcmData();
 
