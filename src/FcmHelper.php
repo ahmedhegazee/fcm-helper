@@ -2,13 +2,11 @@
 
 namespace AhmedHegazy\FcmHelper;
 
-use App\Jobs\AddNotificationsToUsersJob;
 use Google\Client as GClient;
 use Google\Service\FirebaseCloudMessaging;
 use Google_Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Modules\Auth\Entities\User;
 
 class FcmHelper
 {
@@ -17,7 +15,8 @@ class FcmHelper
      */
     private static function getBaseUrl(): string
     {
-        return 'https://fcm.googleapis.com/v1/projects/'.config('fcm-helper.project_name').'/messages:send';
+        return 'https://fcm.googleapis.com/v1/projects/' . config('fcm-helper.project_name') . '/messages:send';
+        return 'https://fcm.googleapis.com/v1/projects/' . config('fcm-helper.project_name') . '/messages:send';
     }
 
     /**
@@ -25,7 +24,9 @@ class FcmHelper
      */
     private static function initClient(): GClient
     {
-        $path = base_path().'/'.\config('fcm-helper.json_file_path');
+        $path = base_path() . '/' . \config('fcm-helper.json_file_path');
+        $client = new GClient;
+        $path = base_path() . '/' . \config('fcm-helper.json_file_path');
         $client = new GClient;
         try {
             $client->setAuthConfig($path);
@@ -59,7 +60,7 @@ class FcmHelper
         $oauthToken = static::generateToken($client);
 
         return Http::acceptJson()->withHeaders([
-            'Authorization' => 'Bearer '.$oauthToken,
+            'Authorization' => 'Bearer ' . $oauthToken,
         ])->post(static::getBaseUrl(), [
             'message' => [
                 'token' => $dto->getToken(),
@@ -79,10 +80,9 @@ class FcmHelper
             'Modules\Notification\Notifications\SendTopicNotification',
         ), $userType)->onQueue('notifications');
         $topic = Str::ulid()->__toString();
-        $tokens = User::query()->select(['mobile_token'])->where('type', $userType)->whereNotNull('mobile_token')->get()->pluck('mobile_token')->toArray();
-        static::registerTokenToTopic($topic, $tokens);
+        self::registerTokenToTopic($topic, $tokens);
         $response = Http::acceptJson()->withHeaders([
-            'Authorization' => 'Bearer '.$oauthToken,
+            'Authorization' => 'Bearer ' . $oauthToken,
         ])->post(static::getBaseUrl(), [
             'message' => [
                 'topic' => $topic,
@@ -101,14 +101,16 @@ class FcmHelper
 
         return Http::withHeaders([
             'access_token_auth' => 'true',
-            'authorization' => 'Bearer '.$oauthToken,
+            'authorization' => 'Bearer ' . $oauthToken,
             'Content-Type' => 'application/json',
             'x-goog-api-client' => 'red-type/sa',
             'Host' => 'iid.googleapis.com',
             'User-Agent' => 'GuzzleHttp/7',
             'auth' => 'google_auth',
         ])->post('https://iid.googleapis.com/iid/v1:batchAdd', [
-            'to' => '/topics/'.$topic,
+            'to' => '/topics/' . $topic,
+            'registration_tokens' => $tokens,
+            'to' => '/topics/' . $topic,
             'registration_tokens' => $tokens,
         ])->json();
     }
@@ -119,14 +121,16 @@ class FcmHelper
 
         return Http::withHeaders([
             'access_token_auth' => 'true',
-            'authorization' => 'Bearer '.$oauthToken,
+            'authorization' => 'Bearer ' . $oauthToken,
             'Content-Type' => 'application/json',
             'x-goog-api-client' => 'red-type/sa',
             'Host' => 'iid.googleapis.com',
             'User-Agent' => 'GuzzleHttp/7',
             'auth' => 'google_auth',
         ])->post('https://iid.googleapis.com/iid/v1:batchRemove', [
-            'to' => '/topics/'.$topic,
+            'to' => '/topics/' . $topic,
+            'registration_tokens' => $tokens,
+            'to' => '/topics/' . $topic,
             'registration_tokens' => $tokens,
         ])->json();
     }
