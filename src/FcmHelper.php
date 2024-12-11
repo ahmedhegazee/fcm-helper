@@ -10,12 +10,27 @@ use Illuminate\Support\Str;
 
 class FcmHelper
 {
+    private static string $oauthToken = '';
+
     /**
      * return the base url of FCM
      */
     private static function getBaseUrl(): string
     {
         return 'https://fcm.googleapis.com/v1/projects/'.config('fcm-helper.project_name').'/messages:send';
+    }
+
+    public static function getHeaders(string $oauthToken): array
+    {
+        return [
+            'access_token_auth' => 'true',
+            'authorization' => 'Bearer '.$oauthToken,
+            'Content-Type' => 'application/json',
+            'x-goog-api-client' => 'red-type/sa',
+            'Host' => 'iid.googleapis.com',
+            'User-Agent' => 'GuzzleHttp/7',
+            'auth' => 'google_auth',
+        ];
     }
 
     /**
@@ -38,10 +53,13 @@ class FcmHelper
 
     private static function generateToken(GClient $client): string
     {
+        if (! empty(self::$oauthToken)) {
+            return self::$oauthToken;
+        }
         $client->fetchAccessTokenWithAssertion();
-        $accessToken = $client->getAccessToken();
+        self::$oauthToken = $client->getAccessToken()['access_token'];
 
-        return $accessToken['access_token'];
+        return self::$oauthToken;
     }
 
     public static function sendMessage(FcmMessage $fcmMessage)
@@ -50,11 +68,11 @@ class FcmHelper
         $client = self::initClient();
         $oauthToken = self::generateToken($client);
 
-        return Http::acceptJson()->withHeaders([
-            'Authorization' => 'Bearer '.$oauthToken,
-        ])->post(self::getBaseUrl(), [
-            'message' => $fcmMessage->toArray(),
-        ])->json();
+        return Http::acceptJson()
+            ->withHeaders(self::getHeaders($oauthToken))
+            ->post(self::getBaseUrl(), [
+                'message' => $fcmMessage->toArray(),
+            ])->json();
     }
 
     public static function sendTopic(FcmMessage $fcmMessage, array $tokens): mixed
@@ -64,11 +82,12 @@ class FcmHelper
 
         $topic = Str::ulid()->__toString();
         self::registerTokenToTopic($topic, $tokens);
-        $response = Http::acceptJson()->withHeaders([
-            'Authorization' => 'Bearer '.$oauthToken,
-        ])->post(self::getBaseUrl(), [
-            'message' => $fcmMessage->toArray(),
-        ])->json();
+        $response = Http::acceptJson()
+            ->withHeaders(self::getHeaders($oauthToken))
+            ->post(self::getBaseUrl(), [
+                'message' => $fcmMessage->toArray(),
+            ])
+            ->json();
         self::removeTokenFromTopic($topic, $tokens);
 
         return $response;
@@ -79,18 +98,11 @@ class FcmHelper
         $client = self::initClient();
         $oauthToken = self::generateToken($client);
 
-        return Http::withHeaders([
-            'access_token_auth' => 'true',
-            'authorization' => 'Bearer '.$oauthToken,
-            'Content-Type' => 'application/json',
-            'x-goog-api-client' => 'red-type/sa',
-            'Host' => 'iid.googleapis.com',
-            'User-Agent' => 'GuzzleHttp/7',
-            'auth' => 'google_auth',
-        ])->post('https://iid.googleapis.com/iid/v1:batchAdd', [
-            'to' => '/topics/'.$topic,
-            'registration_tokens' => $tokens,
-        ])->json();
+        return Http::withHeaders(self::getHeaders($oauthToken))
+            ->post('https://iid.googleapis.com/iid/v1:batchAdd', [
+                'to' => '/topics/'.$topic,
+                'registration_tokens' => $tokens,
+            ])->json();
     }
 
     public static function removeTokenFromTopic(string $topic, array $tokens)
@@ -98,17 +110,10 @@ class FcmHelper
         $client = self::initClient();
         $oauthToken = self::generateToken($client);
 
-        return Http::withHeaders([
-            'access_token_auth' => 'true',
-            'authorization' => 'Bearer '.$oauthToken,
-            'Content-Type' => 'application/json',
-            'x-goog-api-client' => 'red-type/sa',
-            'Host' => 'iid.googleapis.com',
-            'User-Agent' => 'GuzzleHttp/7',
-            'auth' => 'google_auth',
-        ])->post('https://iid.googleapis.com/iid/v1:batchRemove', [
-            'to' => '/topics/'.$topic,
-            'registration_tokens' => $tokens,
-        ])->json();
+        return Http::withHeaders(self::getHeaders($oauthToken))
+            ->post('https://iid.googleapis.com/iid/v1:batchRemove', [
+                'to' => '/topics/'.$topic,
+                'registration_tokens' => $tokens,
+            ])->json();
     }
 }
