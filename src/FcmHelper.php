@@ -15,7 +15,7 @@ class FcmHelper
      */
     private static function getBaseUrl(): string
     {
-        return 'https://fcm.googleapis.com/v1/projects/' . config('fcm-helper.project_name') . '/messages:send';
+        return 'https://fcm.googleapis.com/v1/projects/'.config('fcm-helper.project_name').'/messages:send';
     }
 
     /**
@@ -23,7 +23,7 @@ class FcmHelper
      */
     private static function initClient(): GClient
     {
-        $path = base_path() . '/' . \config('fcm-helper.json_file_path');
+        $path = base_path().'/'.\config('fcm-helper.json_file_path');
         $client = new GClient;
 
         try {
@@ -51,7 +51,7 @@ class FcmHelper
         $oauthToken = self::generateToken($client);
 
         return Http::acceptJson()->withHeaders([
-            'Authorization' => 'Bearer ' . $oauthToken,
+            'Authorization' => 'Bearer '.$oauthToken,
         ])->post(self::getBaseUrl(), [
             'message' => $fcmMessage->toArray(),
         ])->json();
@@ -65,7 +65,7 @@ class FcmHelper
         $topic = Str::ulid()->__toString();
         self::registerTokenToTopic($topic, $tokens);
         $response = Http::acceptJson()->withHeaders([
-            'Authorization' => 'Bearer ' . $oauthToken,
+            'Authorization' => 'Bearer '.$oauthToken,
         ])->post(self::getBaseUrl(), [
             'message' => $fcmMessage->toArray(),
         ])->json();
@@ -81,14 +81,14 @@ class FcmHelper
 
         return Http::withHeaders([
             'access_token_auth' => 'true',
-            'authorization' => 'Bearer ' . $oauthToken,
+            'authorization' => 'Bearer '.$oauthToken,
             'Content-Type' => 'application/json',
             'x-goog-api-client' => 'red-type/sa',
             'Host' => 'iid.googleapis.com',
             'User-Agent' => 'GuzzleHttp/7',
             'auth' => 'google_auth',
         ])->post('https://iid.googleapis.com/iid/v1:batchAdd', [
-            'to' => '/topics/' . $topic,
+            'to' => '/topics/'.$topic,
             'registration_tokens' => $tokens,
         ])->json();
     }
@@ -100,14 +100,14 @@ class FcmHelper
 
         return Http::withHeaders([
             'access_token_auth' => 'true',
-            'authorization' => 'Bearer ' . $oauthToken,
+            'authorization' => 'Bearer '.$oauthToken,
             'Content-Type' => 'application/json',
             'x-goog-api-client' => 'red-type/sa',
             'Host' => 'iid.googleapis.com',
             'User-Agent' => 'GuzzleHttp/7',
             'auth' => 'google_auth',
         ])->post('https://iid.googleapis.com/iid/v1:batchRemove', [
-            'to' => '/topics/' . $topic,
+            'to' => '/topics/'.$topic,
             'registration_tokens' => $tokens,
         ])->json();
     }
