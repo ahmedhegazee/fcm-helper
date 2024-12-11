@@ -2,9 +2,9 @@
 
 namespace AhmedHegazy\FcmHelper;
 
+use AhmedHegazy\FcmHelper\Commands\FcmHelperCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use AhmedHegazy\FcmHelper\Commands\FcmHelperCommand;
 
 class FcmHelperServiceProvider extends PackageServiceProvider
 {
