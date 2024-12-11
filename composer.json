@@ -1,24 +1,25 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "ahmedhegazee/fcm-helper",
+    "description": "This is package to help laravel developer to send notifications through fcm",
     "keywords": [
-        ":vendor_name",
+        "Ahmed Hegazy",
         "laravel",
-        ":package_slug"
+        "fcm-helper"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/ahmedhegazee/fcm-helper",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Ahmed Hegazy",
+            "email": "devahmedhegazee@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.4",
-        "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0"
+        "google/apiclient": "^2.18",
+        "illuminate/contracts": "^10.0||^11.0",
+        "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -35,13 +36,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "AhmedHegazy\\FcmHelper\\": "src/",
+            "AhmedHegazy\\FcmHelper\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "AhmedHegazy\\FcmHelper\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -51,7 +52,8 @@
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint"
+        "format": "vendor/bin/pint",
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
     },
     "config": {
         "sort-packages": true,
@@ -63,12 +65,15 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "AhmedHegazy\\FcmHelper\\FcmHelperServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "FcmHelper": "AhmedHegazy\\FcmHelper\\Facades\\FcmHelper"
             }
-        }
+        },
+        "google/apiclient-services": [
+            "FirebaseCloudMessaging"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace AhmedHegazy\FcmHelper\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FcmHelperCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'fcm-helper';
 
     public $description = 'My command';
 
