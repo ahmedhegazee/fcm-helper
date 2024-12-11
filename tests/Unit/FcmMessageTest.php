@@ -22,7 +22,6 @@ class FcmMessageTest extends TestCase
         $this->message = new FcmMessage($this->notification);
     }
 
-
     public function test_can_set_fcm_token()
     {
         $token = 'test-token';
@@ -31,7 +30,6 @@ class FcmMessageTest extends TestCase
         $messageArray = $this->message->toArray();
         $this->assertEquals($token, $messageArray['token']);
     }
-
 
     public function test_can_set_fcm_topic()
     {
@@ -42,10 +40,9 @@ class FcmMessageTest extends TestCase
         $this->assertEquals($topic, $messageArray['topic']);
     }
 
-
     public function test_can_set_fcm_data()
     {
-        $data = new FcmData();
+        $data = new FcmData;
         $data->add('key1', 'value1')
             ->add('key2', 'value2');
 
@@ -56,7 +53,6 @@ class FcmMessageTest extends TestCase
         $this->assertEquals('value1', $messageArray['data']['key1']);
         $this->assertEquals('value2', $messageArray['data']['key2']);
     }
-
 
     public function test_can_set_apn_config()
     {
@@ -72,7 +68,6 @@ class FcmMessageTest extends TestCase
         $this->assertEquals(10, $messageArray['apns']['headers']['apns-priority']);
     }
 
-
     public function test_can_set_android_config()
     {
         $android = new FcmAndroid;
@@ -85,11 +80,10 @@ class FcmMessageTest extends TestCase
         $this->assertEquals('test-collapse.wav', $messageArray['android']['notification']['sound']);
     }
 
-
     public function test_converts_to_array_with_all_components()
     {
         $token = 'test-token';
-        $data = new FcmData();
+        $data = new FcmData;
         $data->add('key', 'value');
 
         $this->message->setFcmToken($token)
