@@ -30,6 +30,20 @@ class FcmMessage
         return $this;
     }
 
+    public function setFcmToken(string $fcmToken): self
+    {
+        $this->fcmToken = $fcmToken;
+
+        return $this;
+    }
+
+    public function setFcmTopic(string $fcmTopic): self
+    {
+        $this->fcmTopic = $fcmTopic;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         $data = [

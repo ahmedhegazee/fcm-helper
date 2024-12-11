@@ -16,7 +16,6 @@ class FcmHelper
     private static function getBaseUrl(): string
     {
         return 'https://fcm.googleapis.com/v1/projects/' . config('fcm-helper.project_name') . '/messages:send';
-        return 'https://fcm.googleapis.com/v1/projects/' . config('fcm-helper.project_name') . '/messages:send';
     }
 
     /**
@@ -26,8 +25,7 @@ class FcmHelper
     {
         $path = base_path() . '/' . \config('fcm-helper.json_file_path');
         $client = new GClient;
-        $path = base_path() . '/' . \config('fcm-helper.json_file_path');
-        $client = new GClient;
+
         try {
             $client->setAuthConfig($path);
             $client->addScope(FirebaseCloudMessaging::FIREBASE_MESSAGING);
@@ -46,58 +44,40 @@ class FcmHelper
         return $accessToken['access_token'];
     }
 
-    /**
-     * Undocumented function
-     *
-     * @param  string  $userToken
-     * @param  array  $bookingDetails  =['id'=>'','date' => '','vendor' => '']
-     * @return void
-     */
-    public static function sendMessage(FCMDTO $dto)
+    public static function sendMessage(FcmMessage $fcmMessage)
     {
 
-        $client = static::initClient();
-        $oauthToken = static::generateToken($client);
+        $client = self::initClient();
+        $oauthToken = self::generateToken($client);
 
         return Http::acceptJson()->withHeaders([
             'Authorization' => 'Bearer ' . $oauthToken,
-        ])->post(static::getBaseUrl(), [
-            'message' => [
-                'token' => $dto->getToken(),
-                'notification' => $dto->getNotification(),
-                'data' => $dto->getData(),
-            ],
+        ])->post(self::getBaseUrl(), [
+            'message' => $fcmMessage->toArray(),
         ])->json();
     }
 
-    public static function sendTopic(FCMDTO $dto, string $userType)
+    public static function sendTopic(FcmMessage $fcmMessage, array $tokens): mixed
     {
-        $oauthToken = static::initClient();
+        $client = self::initClient();
+        $oauthToken = self::generateToken($client);
 
-        AddNotificationsToUsersJob::dispatch(new \Modules\Notification\DataTransferObjects\NotificationDto(
-            $dto->getNotification()['title'],
-            $dto->getNotification()['body'],
-            'Modules\Notification\Notifications\SendTopicNotification',
-        ), $userType)->onQueue('notifications');
         $topic = Str::ulid()->__toString();
         self::registerTokenToTopic($topic, $tokens);
         $response = Http::acceptJson()->withHeaders([
             'Authorization' => 'Bearer ' . $oauthToken,
-        ])->post(static::getBaseUrl(), [
-            'message' => [
-                'topic' => $topic,
-                'notification' => $dto->getNotification(),
-                'data' => $dto->getData(),
-            ],
+        ])->post(self::getBaseUrl(), [
+            'message' => $fcmMessage->toArray(),
         ])->json();
-        static::removeTokenFromTopic($topic, $tokens);
+        self::removeTokenFromTopic($topic, $tokens);
 
         return $response;
     }
 
     public static function registerTokenToTopic(string $topic, array $tokens)
     {
-        $oauthToken = static::initClient();
+        $client = self::initClient();
+        $oauthToken = self::generateToken($client);
 
         return Http::withHeaders([
             'access_token_auth' => 'true',
@@ -110,14 +90,13 @@ class FcmHelper
         ])->post('https://iid.googleapis.com/iid/v1:batchAdd', [
             'to' => '/topics/' . $topic,
             'registration_tokens' => $tokens,
-            'to' => '/topics/' . $topic,
-            'registration_tokens' => $tokens,
         ])->json();
     }
 
     public static function removeTokenFromTopic(string $topic, array $tokens)
     {
-        $oauthToken = static::initClient();
+        $client = self::initClient();
+        $oauthToken = self::generateToken($client);
 
         return Http::withHeaders([
             'access_token_auth' => 'true',
@@ -128,8 +107,6 @@ class FcmHelper
             'User-Agent' => 'GuzzleHttp/7',
             'auth' => 'google_auth',
         ])->post('https://iid.googleapis.com/iid/v1:batchRemove', [
-            'to' => '/topics/' . $topic,
-            'registration_tokens' => $tokens,
             'to' => '/topics/' . $topic,
             'registration_tokens' => $tokens,
         ])->json();
