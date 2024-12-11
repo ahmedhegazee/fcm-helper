@@ -45,7 +45,7 @@ class FcmMessageTest extends TestCase
     /** @test */
     public function it_can_set_fcm_data()
     {
-        $data = new FcmData('test-type');
+        $data = new FcmData();
         $data->add('key1', 'value1')
             ->add('key2', 'value2');
 
@@ -62,7 +62,7 @@ class FcmMessageTest extends TestCase
     {
         $apn = new FcmApn;
         $apn->setPriority(10)
-            ->setSound('default')
+            ->setSound('default.caf')
             ->setCategory('NEW_MESSAGE');
 
         $this->message->setApn($apn);
@@ -89,7 +89,7 @@ class FcmMessageTest extends TestCase
     public function it_converts_to_array_with_all_components()
     {
         $token = 'test-token';
-        $data = new FcmData('test-type');
+        $data = new FcmData();
         $data->add('key', 'value');
 
         $this->message->setFcmToken($token)
