@@ -11,19 +11,25 @@ class FcmApn
 
     private string $category = 'NEW_MESSAGE_CATEGORY';
 
-    public function setPriority(int $priority)
+    public function setPriority(int $priority): self
     {
         $this->priority = $priority;
+
+        return $this;
     }
 
-    public function setSound(string $sound)
+    public function setSound(string $sound): self
     {
         $this->sound = $sound;
+
+        return $this;
     }
 
-    public function setCategory(string $category)
+    public function setCategory(string $category): self
     {
         $this->category = $category;
+
+        return $this;
     }
 
     public function toArray(): array

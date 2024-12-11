@@ -38,7 +38,9 @@ class FcmHelper
      */
     private static function initClient(): GClient
     {
-        $path = base_path().'/'.\config('fcm-helper.json_file_path');
+        // $path = base_path() . '/' . \config('fcm-helper.json_file_path');
+        $path = config('fcm-helper.json_file_path');
+
         $client = new GClient;
 
         try {
