@@ -13,6 +13,7 @@ class FcmMessage
     private ?string $fcmTopic = null;
 
     private ?FcmData $fcmData = null;
+
     public function __construct(
         private FcmNotification $fcmNotification,
     ) {}
@@ -51,6 +52,7 @@ class FcmMessage
 
         return $this;
     }
+
     public function toArray(): array
     {
         $data = [
@@ -71,6 +73,7 @@ class FcmMessage
         if (! is_null($this->fcmData)) {
             $data['data'] = $this->fcmData->toArray();
         }
+
         return $data;
     }
 }
